@@ -1,38 +1,33 @@
 # src/plotting.py
 """Visualization functions for temperature data."""
 import matplotlib.pyplot as plt
+from dash import Dash, dcc, html
 import plotly.express as px
 import webbrowser
-import os
 
-
-def plot_temperature_timeseries(df, column='temperature', save_path='output/temp_plot.html'):
-    """
-    Create a time series plot of temperature data.
-    
-    Parameters:
-    -----------
-    df : pd.DataFrame
-        Temperature data with datetime index
-    column : str
-        Column name for temperature values
-    save_path : str
-        Path to save figure (default: 'output/temp_plot.html')
-    """
-    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+def plot_temperature_timeseries(df, column='temperature'):
+    app = Dash(__name__)
     
     fig = px.line(df.reset_index(), x='index', y=column)
     fig.update_layout(
-        title='Ocean Temperature Over Time',
+        title='Ocean Temperature Time Series<br>(January 2021 - December 2024)',
         xaxis_title='Date',
         yaxis_title='Temperature (°C)',
-        width=1200,
-        height=600
+        template='plotly_white',
+        title_x=0.5,
+        font=dict(size=14),
+        hovermode='x unified'
     )
-    fig.update_traces(line=dict(width=0.8), opacity=0.7)
+    fig.update_traces(line=dict(width=2, color='#1f77b4'))
     
-    fig.write_html(save_path)
-    webbrowser.open('file://' + os.path.realpath(save_path))
+    app.layout = html.Div([
+        dcc.Graph(figure=fig, style={'height': '80vh'})
+    ], style={'padding': '20px'})
+    
+    webbrowser.open('http://127.0.0.1:8050')
+    app.run(debug=False)
+    
+
 
 
 
