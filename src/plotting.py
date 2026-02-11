@@ -1,8 +1,12 @@
 # src/plotting.py
 """Visualization functions for temperature data."""
 import matplotlib.pyplot as plt
+import plotly.express as px
+import webbrowser
+import os
 
-def plot_temperature_timeseries(df, column='temperature', save_path=None):
+
+def plot_temperature_timeseries(df, column='temperature', save_path='output/temp_plot.html'):
     """
     Create a time series plot of temperature data.
     
@@ -12,20 +16,24 @@ def plot_temperature_timeseries(df, column='temperature', save_path=None):
         Temperature data with datetime index
     column : str
         Column name for temperature values
-    save_path : str, optional
-        Path to save figure
+    save_path : str
+        Path to save figure (default: 'output/temp_plot.html')
     """
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(df.index, df[column], linewidth=0.8, alpha=0.7)
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Temperature (°C)')
-    ax.set_title('Ocean Temperature Over Time')
-    ax.grid(True, alpha=0.3)
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
     
-    if save_path:
-        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    fig = px.line(df.reset_index(), x='index', y=column)
+    fig.update_layout(
+        title='Ocean Temperature Over Time',
+        xaxis_title='Date',
+        yaxis_title='Temperature (°C)',
+        width=1200,
+        height=600
+    )
+    fig.update_traces(line=dict(width=0.8), opacity=0.7)
     
-    plt.show()
+    fig.write_html(save_path)
+    webbrowser.open('file://' + os.path.realpath(save_path))
+
 
 
 def plot_monthly_comparison(monthly_data, save_path=None):

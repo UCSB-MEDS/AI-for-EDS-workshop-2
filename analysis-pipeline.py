@@ -1,6 +1,5 @@
 
 """Main script to run ocean temperature analysis."""
-import pandas as pd
 from src.data_loader import load_temperature_data, validate_data
 from src.analysis import calculate_mean_temperature, calculate_trend
 from src.plotting import plot_temperature_timeseries
